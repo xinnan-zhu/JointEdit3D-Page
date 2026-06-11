@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="JointEdit3D: Feed-Forward 3D Scene Editing in a Unified Latent Space">
+    <title>JointEdit3D</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="assets/styles.css?v=20260611-github-pages-ready">
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="nav-wrap">
+        <a class="brand" href="#top">JointEdit3D</a>
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="#abstract">Abstract</a>
+          <a href="#method">Method</a>
+          <a href="#dataset">Dataset</a>
+          <a href="#results">Results</a>
+          <a href="#demos">Demos</a>
+          <a href="#citation">Citation</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="container narrow">
+          <h1>JointEdit3D: Feed-Forward 3D Scene Editing in a Unified Latent Space</h1>
+          <p class="authors">
+            <span class="author-name">Xinnan Zhu<sup>1,2,*</sup></span>
+            <span class="author-name">Ruijie Xu<sup>1,2,*</sup></span>
+            <span class="author-name">Jiayu Ying<sup>1</sup></span>
+            <span class="author-name">Daoguo Dong<sup>3</sup></span>
+            <span class="author-name">Jiachen Xu<sup>4</sup></span>
+            <span class="author-name">Yuan Xie<sup>1</sup></span>
+            <span class="author-name">Xin Tan<sup>1,2,&dagger;</sup></span>
+          </p>
+          <p class="affiliations">
+            <sup>1</sup>East China Normal University &nbsp;&nbsp; <sup>2</sup>Shanghai Artificial Intelligence Laboratory &nbsp;&nbsp; <sup>3</sup>Fudan University &nbsp;&nbsp; <sup>4</sup>Tencent
+          </p>
+          <p class="notes">
+            <sup>*</sup>Equal contribution. <sup>&dagger;</sup>Corresponding author.
+          </p>
+          <div class="link-row" aria-label="Project links">
+            <a class="pill primary" href="assets/JointEdit3D_arxiv.pdf">
+              <i class="ai ai-arxiv pill-symbol" aria-hidden="true"></i>
+              <span>arXiv</span>
+            </a>
+            <span class="pill disabled" aria-disabled="true">
+              <i class="fa-brands fa-github pill-symbol" aria-hidden="true"></i>
+              <span>Code</span>
+            </span>
+            <span class="pill disabled" aria-disabled="true">
+              <img class="pill-symbol hf-logo" src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" alt="" aria-hidden="true">
+              <span>Dataset</span>
+            </span>
+            <span class="pill disabled" aria-disabled="true">
+              <img class="pill-symbol hf-logo" src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" alt="" aria-hidden="true">
+              <span>Model</span>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section band" id="abstract">
+        <div class="container narrow">
+          <h2>Abstract</h2>
+          <p class="section-text">
+            Existing 3D scene editing methods typically rely on per-scene optimization over explicit 3D representations or cascaded edit-and-reconstruct pipelines, resulting in high test-time cost, limited 3D awareness, and structural inconsistencies. To couple appearance synthesis and geometry prediction during editing, we build on a unified RGB-geometry reconstruction-generation latent space and adapt it to feed-forward 3D scene editing. The resulting framework, <strong>JointEdit3D</strong>, performs asymmetric latent inpainting by observing only a single edited RGB reference latent and generating the remaining RGB views and edited geometry latent under source-scene anchoring. JointEdit3D introduces a dedicated SceneAnchor Branch to inject source-scene structure without forcing direct copying, and adopts edit/background-aware losses to balance edited-region fidelity with unedited-content preservation. To address the lack of paired resources for standardized 3D scene editing evaluation, we introduce <strong>SceneEdit3D-15K</strong>, a dataset with 15K paired editing samples and renderer-provided 3D annotations, together with <strong>SceneEdit3D-Bench</strong>, a curated 100-sample benchmark. Experiments show that JointEdit3D improves edited-region quality and 3D structural completeness over prior baselines while maintaining competitive background preservation.
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="method">
+        <div class="container">
+          <h2>Method</h2>
+          <figure class="paper-figure">
+            <img src="assets/images/method_overview.png" alt="JointEdit3D method overview">
+            <figcaption>
+              RGB-geometry latent inpainting with source-scene anchoring. The edited reference frame specifies the target edit, while the SceneAnchor Branch preserves 3D scene structure without forcing direct copying.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section band" id="dataset">
+        <div class="container">
+          <h2>Dataset</h2>
+          <p class="section-subtitle">
+            SceneEdit3D provides paired scene-level edits with renderer-side 3D supervision for training and standardized evaluation.
+          </p>
+          <figure class="dataset-figure">
+            <img src="assets/images/data_pipeline.png" alt="SceneEdit3D-15K data generation pipeline">
+            <figcaption>
+              SceneEdit3D-15K starts from composable 3D indoor scenes, proposes canonical edits with a VLM, executes valid edits in Blender, and renders paired source/target videos with RGB, depth, camera, mask, edited-reference, and instruction supervision.
+            </figcaption>
+          </figure>
+          <div class="dataset-grid">
+            <article class="dataset-card">
+              <strong>SceneEdit3D-15K</strong>
+              <span>15K paired editing samples covering scene-level object removal, movement, appearance edits, and mixed operations.</span>
+            </article>
+            <article class="dataset-card">
+              <strong>3D Annotations</strong>
+              <span>Renderer-provided geometry, camera, mask, and auxiliary supervision support RGB-geometry editing and evaluation.</span>
+            </article>
+            <article class="dataset-card">
+              <strong>SceneEdit3D-Bench</strong>
+              <span>A curated 100-sample benchmark for edit fidelity, background preservation, and 3D structural quality.</span>
+            </article>
+          </div>
+          <div class="dataset-samples">
+            <h3>Dataset Samples</h3>
+            <p>
+              Each sample pairs source/edited videos with semi-transparent mask overlays, the example edit prompt, and source/edited 3D point-cloud previews.
+            </p>
+            <div class="dataset-sample-stage" id="dataset-sample-stage" aria-live="polite"></div>
+            <div class="dataset-sample-tabs" id="dataset-sample-tabs" aria-label="Dataset sample cases"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="results">
+        <div class="container">
+          <h2>Quantitative Results</h2>
+          <p class="section-subtitle">
+            We evaluate edit fidelity and background preservation with region-aware PSNR/LPIPS, and measure 3D structure against renderer-provided edited geometry.
+          </p>
+          <p class="table-legend" aria-label="Table highlight legend">
+            <span class="legend-swatch best"></span>Best
+            <span class="legend-swatch second"></span>Second-best
+          </p>
+          <figure class="runtime-figure results-runtime">
+            <img src="assets/images/runtime_quality.png" alt="Runtime-quality comparison plot">
+            <figcaption>JointEdit3D gives a favorable quality-efficiency trade-off in the 49-frame full-3D protocol.</figcaption>
+          </figure>
+          <div class="results-tables">
+            <div class="table-card primary-table">
+              <h3>Delete Edit Region</h3>
+              <p>Values are reported as PSNR ↑ / LPIPS ↓.</p>
+              <div class="table-scroll">
+                <table class="delete-table">
+                  <thead>
+                    <tr>
+                      <th>Method</th>
+                      <th>
+                        <span class="metric-dataset">SceneEdit3D-Bench</span>
+                        <span class="metric-order">PSNR ↑ / LPIPS ↓</span>
+                      </th>
+                      <th>
+                        <span class="metric-dataset">360-USID</span>
+                        <span class="metric-order">PSNR ↑ / LPIPS ↓</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>SPIn-NeRF</td><td>19.20 / 0.528</td><td>15.89 / 0.4826</td></tr>
+                    <tr><td>Gaussian Grouping</td><td>20.41 / 0.377</td><td>16.67 / 0.4241</td></tr>
+                    <tr><td>GScream</td><td>20.38 / 0.449</td><td>14.37 / 0.5725</td></tr>
+                    <tr><td>GaussianEditor</td><td>20.26 / 0.451</td><td>16.23 / 0.3975</td></tr>
+                    <tr><td>MVInpainter</td><td>21.37 / 0.406</td><td>15.60 / 0.5677</td></tr>
+                    <tr><td>Omni-3DEdit</td><td><span class="metric-second">24.86</span> / <span class="metric-second">0.307</span></td><td><span class="metric-second">17.78</span> / <span class="metric-second">0.3655</span></td></tr>
+                    <tr class="ours"><td>JointEdit3D</td><td><span class="metric-best">31.92</span> / <span class="metric-best">0.151</span></td><td><span class="metric-best">18.57</span> / <span class="metric-best">0.3426</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="table-card geometry-card">
+              <h3>3D Geometry Quality</h3>
+              <p>Point-cloud metrics against renderer-provided edited geometry.</p>
+              <div class="table-scroll">
+                <table class="geometry-table">
+                  <thead>
+                    <tr>
+                      <th>Method</th>
+                      <th>3D Source</th>
+                      <th>Accuracy ↓</th>
+                      <th>Completeness ↓</th>
+                      <th>CD ↓</th>
+                      <th>F-score ↑</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>GT RGB + VGGT</td><td>VGGT recon.</td><td><span class="metric-best">0.0724</span></td><td><span class="metric-second">0.0950</span></td><td><span class="metric-best">0.0837</span></td><td><span class="metric-second">0.9619</span></td></tr>
+                    <tr><td>SEVA + VGGT</td><td>VGGT recon.</td><td>0.1433</td><td>0.2244</td><td>0.1839</td><td>0.8722</td></tr>
+                    <tr><td>Omni-3DEdit + VGGT</td><td>VGGT recon.</td><td>0.1165</td><td>0.1313</td><td>0.1239</td><td>0.9143</td></tr>
+                    <tr><td>JointEdit3D RGB + VGGT</td><td>VGGT recon.</td><td><span class="metric-second">0.0891</span></td><td>0.1211</td><td>0.1051</td><td>0.9357</td></tr>
+                    <tr class="ours"><td>JointEdit3D</td><td>Joint output</td><td>0.1153</td><td><span class="metric-best">0.0886</span></td><td><span class="metric-second">0.1020</span></td><td><span class="metric-best">0.9702</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="table-card wide-table">
+              <h3>Operation-wise Region Metrics</h3>
+              <p>Average PSNR / LPIPS over Delete, Add, Move, Appearance, and Multi-op on SceneEdit3D-Bench.</p>
+              <div class="table-scroll">
+                <table class="region-table">
+                  <thead>
+                    <tr>
+                      <th>Region</th>
+                      <th>Method</th>
+                      <th>Delete</th>
+                      <th>Add</th>
+                      <th>Move</th>
+                      <th>Appearance</th>
+                      <th>Multi-op</th>
+                      <th>Average</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Bg.</td><td>SEVA</td><td>17.89 / 0.421</td><td>17.74 / 0.426</td><td>17.69 / 0.411</td><td>19.00 / 0.378</td><td>17.54 / 0.445</td><td>17.93 / 0.418</td></tr>
+                    <tr><td>Bg.</td><td>MVInpainter</td><td><span class="metric-best">33.57</span> / <span class="metric-second">0.080</span></td><td><span class="metric-best">33.64</span> / <span class="metric-best">0.076</span></td><td><span class="metric-second">30.97</span> / <span class="metric-second">0.081</span></td><td><span class="metric-second">33.76</span> / <span class="metric-second">0.073</span></td><td><span class="metric-second">30.06</span> / <span class="metric-best">0.091</span></td><td><span class="metric-best">32.40</span> / <span class="metric-second">0.080</span></td></tr>
+                    <tr><td>Bg.</td><td>Omni-3DEdit</td><td>25.00 / 0.215</td><td>24.24 / 0.217</td><td>24.40 / 0.210</td><td>25.88 / 0.190</td><td>23.81 / 0.235</td><td>24.65 / 0.214</td></tr>
+                    <tr class="ours"><td>Bg.</td><td>JointEdit3D</td><td><span class="metric-second">32.62</span> / <span class="metric-best">0.079</span></td><td><span class="metric-second">32.59</span> / <span class="metric-second">0.081</span></td><td><span class="metric-best">31.22</span> / <span class="metric-best">0.069</span></td><td><span class="metric-best">33.80</span> / <span class="metric-best">0.059</span></td><td><span class="metric-best">30.84</span> / <span class="metric-second">0.095</span></td><td><span class="metric-second">32.33</span> / <span class="metric-best">0.077</span></td></tr>
+                    <tr><td>Edit</td><td>SEVA</td><td>23.39 / 0.399</td><td>15.92 / 0.523</td><td>17.87 / 0.450</td><td>17.50 / 0.464</td><td>16.93 / 0.496</td><td>18.72 / 0.465</td></tr>
+                    <tr><td>Edit</td><td>MVInpainter</td><td>21.37 / 0.406</td><td>20.04 / 0.362</td><td>16.99 / 0.437</td><td>18.94 / 0.349</td><td><span class="metric-second">17.92</span> / <span class="metric-second">0.423</span></td><td>19.05 / 0.392</td></tr>
+                    <tr><td>Edit</td><td>Omni-3DEdit</td><td><span class="metric-second">24.86</span> / <span class="metric-second">0.307</span></td><td><span class="metric-second">20.63</span> / <span class="metric-second">0.293</span></td><td><span class="metric-second">18.55</span> / <span class="metric-second">0.377</span></td><td><span class="metric-second">20.92</span> / <span class="metric-second">0.230</span></td><td>17.03 / 0.461</td><td><span class="metric-second">21.10</span> / <span class="metric-second">0.323</span></td></tr>
+                    <tr class="ours"><td>Edit</td><td>JointEdit3D</td><td><span class="metric-best">31.92</span> / <span class="metric-best">0.151</span></td><td><span class="metric-best">23.88</span> / <span class="metric-best">0.195</span></td><td><span class="metric-best">23.19</span> / <span class="metric-best">0.244</span></td><td><span class="metric-best">27.67</span> / <span class="metric-best">0.115</span></td><td><span class="metric-best">23.77</span> / <span class="metric-best">0.263</span></td><td><span class="metric-best">26.63</span> / <span class="metric-best">0.187</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section band" id="demos">
+        <div class="container">
+          <h2>JointEdit3D Inference Demo Cases</h2>
+          <div class="comparison-grid" id="comparison-grid" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="section band">
+        <div class="container">
+          <h2>Additional Results</h2>
+          <p class="section-subtitle">
+            More paper results are shown below.
+          </p>
+          <div class="paper-results results-carousel" data-carousel>
+            <button class="carousel-button carousel-prev" type="button" aria-label="Previous additional result" data-carousel-prev>
+              <span class="carousel-arrow prev" aria-hidden="true"></span>
+            </button>
+            <div class="results-carousel-window">
+              <div class="results-carousel-track" id="additional-results-track">
+                <figure class="wide-figure carousel-slide">
+                  <img src="assets/images/qualitative_synthetic_real.png" alt="Qualitative comparison across synthetic and real scenes" loading="lazy">
+                  <figcaption>
+                    Qualitative comparison across synthetic SceneEdit3D-Bench and real-world 360-USID/DL3DV examples.
+                  </figcaption>
+                </figure>
+                <figure class="wide-figure carousel-slide">
+                  <img src="assets/images/qualitative_multi_operation.png" alt="JointEdit3D qualitative comparison across challenging operation types" loading="lazy">
+                  <figcaption>
+                    Challenging operation types, including dynamic object removal, relocation, and multi-operation editing.
+                  </figcaption>
+                </figure>
+                <figure class="wide-figure carousel-slide">
+                  <img src="assets/images/qualitative_appearance_edit_comparison.png" alt="Appearance editing qualitative comparison" loading="lazy">
+                  <figcaption>
+                    Appearance editing comparison on a challenging real video with a reference-guided color change.
+                  </figcaption>
+                </figure>
+                <figure class="wide-figure carousel-slide">
+                  <img src="assets/images/qualitative_real_scene_object_removal.png" alt="Real-scene object removal qualitative comparison" loading="lazy">
+                  <figcaption>
+                    Additional qualitative comparison for real-scene object removal.
+                  </figcaption>
+                </figure>
+                <figure class="wide-figure carousel-slide">
+                  <img src="assets/images/qualitative_real_scene_multi_edit.png" alt="Real-scene multi-editing qualitative examples" loading="lazy">
+                  <figcaption>
+                    Real-scene multi-editing with multiple edited reference frames.
+                  </figcaption>
+                </figure>
+                <figure class="wide-figure carousel-slide">
+                  <img src="assets/images/qualitative_desk_editing.png" alt="Real-scene desk editing qualitative result" loading="lazy">
+                  <figcaption>
+                    Real-scene editing examples showing propagated RGB edits and the corresponding 3D point-cloud output.
+                  </figcaption>
+                </figure>
+                <figure class="wide-figure carousel-slide">
+                  <img src="assets/images/training_response.png" alt="Training-time response diagnostic" loading="lazy">
+                  <figcaption>
+                    Training-time response diagnostic for region-decomposed supervision.
+                  </figcaption>
+                </figure>
+                <figure class="wide-figure carousel-slide">
+                  <img src="assets/images/inference_response.png" alt="Edit-condition impact visualization" loading="lazy">
+                  <figcaption>
+                    Edit-condition impact visualization for the edited reference condition.
+                  </figcaption>
+                </figure>
+              </div>
+            </div>
+            <button class="carousel-button carousel-next" type="button" aria-label="Next additional result" data-carousel-next>
+              <span class="carousel-arrow next" aria-hidden="true"></span>
+            </button>
+            <div class="carousel-dots" id="additional-results-dots" aria-label="Additional result slides"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="citation">
+        <div class="container narrow">
+          <h2>Citation</h2>
+          <pre><code>@article{zhu2026jointedit3d,
+  title={JointEdit3D: Feed-Forward 3D Scene Editing in a Unified Latent Space},
+  author={Zhu, Xinnan and Xu, Ruijie and Ying, Jiayu and Dong, Daoguo and Xu, Jiachen and Xie, Yuan and Tan, Xin},
+  journal={arXiv preprint},
+  year={2026}
+}</code></pre>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <span>JointEdit3D project page.</span>
+        <span>Website template adapted from <a href="https://github.com/SceneReVis/SceneReVis.github.io">SceneReVis</a>.</span>
+      </div>
+    </footer>
+
+    <script src="assets/model-config.js?v=20260611-external-models"></script>
+    <script src="assets/app.js?v=20260611-external-models"></script>
+  </body>
+</html>
